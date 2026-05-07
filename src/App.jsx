@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { BrowserRouter } from 'react-router-dom';
 import MySurvey from './SurveyComponent/MySurvey';
 import Login from './LoginComponent/Login';
-import Surveys from './SurveyComponent/Surveys';
+import Survey from './SurveyComponent/Surveys';
 import AboutUs from './FooterComponent/AboutUs';
 import CreateSurvey from './SurveyComponent/Create-Survey';
 import Home from './HomeComponent/Home';
@@ -12,6 +12,7 @@ import Navbar from './HomeComponent/Navbar';
 import Footer from './FooterComponent/Footer';
 import ContactUs from './FooterComponent/ContactUs';
 import TermsAndCondition from './FooterComponent/TermsAndCondition';
+import Admin from './AdminComponent/Admin'
 
 function App() {
   return (
@@ -20,11 +21,9 @@ function App() {
     </BrowserRouter>
   );
 }
-
 function AppContent() {
   const location = useLocation();
-  const hideNavbar = location.pathname === '/';
-
+  const hideNavbar = (location.pathname === '/')|| (location.pathname==='/Admin');
   return (
     <div className="App">
       <ScrollToTop />
@@ -34,10 +33,11 @@ function AppContent() {
         <Route path='/Create-Survey' element={<CreateSurvey />} />
         <Route path='/MySurvey' element={<MySurvey />} />
         <Route path='/' element={<Login />} />
-        <Route path='/Surveys' element={<Surveys />} />
+        <Route path='/Survey' element={<Survey />} />
         <Route path='/AboutUs' element={<AboutUs />} />
         <Route path='/ContactUs' element={<ContactUs />} />
         <Route path='/TermsAndCondition' element={<TermsAndCondition />} />
+        <Route path='/Admin' element={<Admin/>}/>
       </Routes>
       {!hideNavbar && (<><Footer /></>)}
     </div>

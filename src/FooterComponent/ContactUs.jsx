@@ -7,7 +7,7 @@ export default function ContactUs() {
       <center><h3 className='quote'>Your thoughts matter—let’s talk!</h3></center>
       <div className='contact-flex'>
         <div className='contact-img'>
-          <img  className='image' src='https://instacks.co/assets/images/contact_us_2.svg'
+          <img  className='image' src='https://img.freepik.com/free-vector/flat-design-illustration-customer-support_23-2148887720.jpg?t=st=1740384254~exp=1740387854~hmac=014eeed1cbd750feb5c17d1c8ecdebd337c78cf66cb51be2aff3b460957ee959&w=900'
           alt='Contact us img'/>
         </div>
         <div className='contact-info'>
@@ -17,7 +17,7 @@ export default function ContactUs() {
          </div>
          <div>
           <h3><i class="bi bi-envelope-fill"></i>   Mail Us</h3>
-          <h3>surveyheredmin@gmail.com</h3>
+          <h3>surveyhereadmin@gmail.com</h3>
          </div>
          <div>
           <h3><i class="bi bi-building-fill"></i>   Communication Address</h3>

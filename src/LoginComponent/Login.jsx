@@ -1,249 +1,286 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './login.css';
-import { FaUser, FaLock, FaEnvelope } from 'react-icons/fa';
-import { login,Signup } from '../SurveyComponent/SurveyList';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import swal from "sweetalert";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 export default function Login() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [Conpassword,setConPassword]= useState('')
-  const [newuser,setnewuser]= useState('');
-  const[newpassword,setnewpassword]= useState('')
-  const [newEmail,setnewEmail]=useState("");
-  const [errorEmail,seterrorEmail]= useState(null)
-  const [errorpass,seterrorpass]= useState(null)
-  const [errorname,seterrorname]= useState(null)
-  const [logeduser,setlogeduser]= useState({uname:"",pwd:""});
-  const navigate = useNavigate();
-  const[signup,setsignup]=useState(false)
-  const sup=(event)=>{
-    setsignup(true)
-    event.preventDefault();
-  }
-  const log=(event)=>{
-    setsignup(false)
-    event.preventDefault();
-  }
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    window.history.pushState(null, '', window.location.href);
-    const handlePopState = () => {
-      window.history.pushState(null, '', window.location.href);
+    const [newEmail, setnewEmail] = useState("");
+    const [newuser, setnewuser] = useState("");
+    const [newpassword, setnewpassword] = useState("");
+    const [Conpassword, setConPassword] = useState("");
+
+    const [errorEmail, seterrorEmail] = useState(null);
+    const [errorpass, seterrorpass] = useState(null);
+    const [errorname, seterrorname] = useState(null);
+
+    const [signedup, setsignedup] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const navigate = useNavigate();
+
+    // LOGIN
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        try {
+            const res = await axios.post("http://localhost:3001/api/auth/login", {
+                username,
+                password,
+            });
+
+            const user = res.data.user;
+            const token = res.data.token;
+
+            localStorage.setItem("token", token);
+            localStorage.setItem("loggedUser", JSON.stringify(user));
+
+            navigate("/Home");
+        } catch (err) {
+            swal("Login Failed", err.response?.data?.msg || "Invalid credentials", "error");
+        }
     };
-    window.addEventListener('popstate', handlePopState);
 
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
+    const handleSignUp = async (e) => {
+        e.preventDefault();
+
+        const emailRegex = /\S+@\S+\.\S+/;
+
+        if (!emailRegex.test(newEmail)) {
+            seterrorEmail("Invalid email");
+            return;
+        }
+        if (newpassword.length < 8) {
+            seterrorpass("Minimum 8 characters required");
+            return;
+        }
+        if (newuser.length > 12) {
+            seterrorname("Max 12 characters allowed");
+            return;
+        }
+        if (newpassword !== Conpassword) {
+            alert("Passwords must match");
+            return;
+        }
+
+        try {
+            await axios.post("http://localhost:3001/api/auth/signup", {
+                email: newEmail,
+                username: newuser,
+                password: newpassword,
+            });
+
+            swal("Success", "Signup successful. Please login.", "success");
+
+            setsignedup(false);
+            setnewEmail("");
+            setnewuser("");
+            setnewpassword("");
+            setConPassword("");
+
+            seterrorEmail(null);
+            seterrorpass(null);
+            seterrorname(null);
+
+        } catch (err) {
+            swal("Signup Failed", err.response?.data?.msg || "Error", "error");
+        }
     };
-  }, []);
 
-  const handleLogin = (event) => {
-    event.preventDefault();
-    
-    const checkusername= Signup.findIndex(user=>user.uname===username||user.emailId===username ) ;
-    const checkuserpass= Signup.find(user=>user.userpass===password ) ;
-  
-    
-    
-    if(checkusername>-1){
-      if(checkuserpass){  
-        logeduser.uname=Signup[checkusername].uname;
-        logeduser.pwd=password;
-        localStorage.setItem("logeduser",JSON.stringify(logeduser))   
-        navigate('/Home')
-      }else{
-        alert("Wrong Password ")
-      }
-    }
-    else{
-      alert("Wrong Username or Password")
-    } 
-    
-  };
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-white">
+
+            <div className="w-[1100px] h-[500px] bg-gray-100 rounded-xl shadow-lg flex overflow-hidden ">
+
+                {!signedup ? (
+                    <>
+                        <div className="w-1/2 bg-blue-50 flex flex-col justify-center items-center p-8">
+                            <h1 className="text-2xl font-bold text-gray-800 mb-4">
+                                Welcome Back
+                            </h1>
+                            <img
+                                src="https://img.freepik.com/free-vector/mobile-login-concept-illustration_114360-83.jpg"
+                                className="w-60 mb-4"
+                                alt="login"
+                            />
+                            <p className="text-gray-600 text-center">
+                                Login to continue your surveys.
+                            </p>
+                        </div>
+
+                        <div className="w-1/2  flex flex-col justify-content-center p-10 m-10">
+                            <h2 className="text-xl font-semibold mb-6 text-gray-800 text-center" >Login</h2>
+
+                            <form onSubmit={handleLogin} className="space-y-4">
+
+                                <input
+                                    type="text"
+                                    placeholder="Username or Email"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        placeholder="Password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <span
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </span>
+                                </div>
+
+                                <button className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">
+                                    Login
+                                </button>
+
+                                <p className="text-sm text-center">
+                                    Not registered?{" "}
+                                    <span
+                                        className="text-blue-600 cursor-pointer"
+                                        onClick={() => setsignedup(true)}
+                                    >
+                    Create account
+                  </span>
+                                </p>
+
+                            </form>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <div className="w-1/2 p-12">
+                            <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+                                Sign Up
+                            </h2>
+
+                            <form onSubmit={handleSignUp} className="space-y-4">
+
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Email"
+                                        value={newEmail}
+                                        onChange={(e) => setnewEmail(e.target.value)}
+                                        className={`w-full p-3 border rounded-md focus:ring-2 transition ${
+                                            errorEmail
+                                                ? "border-red-500 focus:ring-red-400"
+                                                : "border-gray-300 focus:ring-blue-500"
+                                        }`}
+                                    />
+                                    {errorEmail && (
+                                        <div className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                                            ⚠ {errorEmail}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <input
+                                        type="text"
+                                        placeholder="Username"
+                                        value={newuser}
+                                        onChange={(e) => setnewuser(e.target.value)}
+                                        className={`w-full p-3 border rounded-md ${
+                                            errorname ? "border-red-500" : "border-gray-300"
+                                        }`}
+                                    />
+                                    {errorname && (
+                                        <div className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                                            ⚠ {errorname}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <div className="relative">
+                                        <input
+                                            type={showPassword ? "text" : "password"}
+                                            placeholder="Password"
+                                            value={newpassword}
+                                            onChange={(e) => setnewpassword(e.target.value)}
+                                            className={`w-full p-3 border rounded-md ${
+                                                errorpass ? "border-red-500" : "border-gray-300"
+                                            }`}
+                                        />
+                                        <span
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                            onClick={() => setShowPassword(!showPassword)}
+                                        >
+          {showPassword ? <FaEyeSlash /> : <FaEye />}
+        </span>
+                                    </div>
+
+                                    {errorpass && (
+                                        <div className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                                            ⚠ {errorpass}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <div className="relative">
+                                        <input
+                                            type={showConfirmPassword ? "text" : "password"}
+                                            placeholder="Confirm Password"
+                                            value={Conpassword}
+                                            onChange={(e) => setConPassword(e.target.value)}
+                                            className="w-full p-3 border border-gray-300 rounded-md"
+                                        />
+                                        <span
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-blue-600"
+                                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        >
+          {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+        </span>
+                                    </div>
+                                </div>
 
 
-  // const signupinserver=()=>{
-  //   axios.post("http://127.0.0.1:3001/signup",{newEmail,newuser,newpassword})
-  //   .then(result=>console.log(result)
-  //  .catch(error){
-  //   console.error(error.)
-    
-  //  }
-  //   )
-  // }
+                                <button className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition">
+                                    Sign Up
+                                </button>
 
-  const handleSignIn=(event)=>{
-    event.preventDefault();
-    const modelEmail=/\S+@\S+\.\S+/;
-    console.log(modelEmail.test(newEmail))
-    console.log(newpassword.length>7)
-    console.log(newuser.length<9)
-    if(modelEmail.test(newEmail)&& (newpassword.length>7)&&(newuser.length<13)){
-      seterrorEmail(null)
-    const userfind=Signup.find(user => user.uname === newuser);
-    const findemail=Signup.find(user=>user.emailId==newEmail);
-    seterrorpass(null)
-    if(Conpassword===newpassword){
-      
-      if(userfind){
-        alert("User name already exist")
-      }else if(findemail){
-        alert("Email already registered. Try logging in.")
-      }
-      else{
-        const uname=newuser;
-      const userpass= newpassword;
-      const emailId=newEmail;
-      const newsignup={emailId,uname,userpass}
-      Signup.push(newsignup);
-      console.log(Signup)
-      setConPassword("");
-      setnewpassword("");
-      setnewuser("");
-      setnewEmail("");
-        setsignup(false)
-        
-      }
-     }else{
-      alert("Paswords must be same");
-     }
-    
-    
-  }else{
-    if(! modelEmail.test(newEmail)){
-    seterrorEmail("Please provide a valid email address")
-    }else{seterrorEmail(null)}
-    if(!(newpassword.length>7)){
-      seterrorpass("Minimum 8 characters required.")
-    }else{seterrorpass(null)}
-    if(!(newuser.length<13)){
-      seterrorname("Please enter a maximum of 13 characters")
-    }else{seterrorname(null)}
-  }
-  }
-  return (
-    <div className="page">
-      <div className="head">
-        <center><h1 style={{color:"bisque"}}><i className="bi bi-bar-chart-steps"/><span>{ }</span> <b>SURVEY HERE</b></h1></center>
-      </div>
-    <div className="login">
-    <div className="login-page">
-      {
-        !signup?(<><div className="login-container">
-          <div className="welcome-section">
-            <h1>Welcome Back!</h1>
-            <img
-              src="https://img.freepik.com/free-vector/mobile-login-concept-illustration_114360-83.jpg"
-              alt="Welcome"
-            />
-            <p>Your opinion matters. Log in to make your voice heard.</p>
-          </div>
-          <div className="form-section">
-            <form onSubmit={handleLogin}>
-              <h2>Login</h2>
-              <div className="input-group">
-                <FaUser className="input-icon" />
-                <input
-                  type="text"
-                  placeholder="Username or E-mail"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="input-group">
-                <FaLock className="input-icon" />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-              <button type="submit" className="login-button">
-                Login
-              </button>
-              <p className="signup-text">
-                Not registered?{' '}
-                <a href="/" onClick={sup}>
-                  Sign up
-                </a>
-              </p>
-            </form>
-          </div>
-        </div></>):(<><div className="signup-container">
-        
-        <div className="form-section">
-          <form onSubmit={handleSignIn}>
-            <h2>Sign up </h2>
-            <div className="input-group">
-              <FaEnvelope className="input-icon" />
-              <input
-                type="text"
-                placeholder="E-mail"
-                value={newEmail}
-                onChange={(e) => setnewEmail(e.target.value)}
-                required
-              />
+                                <p className="text-sm text-center">
+                                    Already have an account?{" "}
+                                    <span
+                                        className="text-blue-600 cursor-pointer"
+                                        onClick={() => setsignedup(false)}
+                                    >
+        Login
+      </span>
+                                </p>
+
+                            </form>
+                        </div>
+
+                        <div className="w-1/2 bg-blue-50 flex flex-col justify-center items-center p-8">
+                            <h1 className="text-2xl font-bold text-gray-800 mb-4">
+                                Join Us
+                            </h1>
+                            <img
+                                src="https://img.freepik.com/free-vector/mobile-login-concept-illustration_114360-83.jpg"
+                                className="w-60 mb-4"
+                                alt="signup"
+                            />
+                            <p className="text-gray-600 text-center">
+                                Create your account and start exploring.
+                            </p>
+                        </div>
+                    </>
+                )}
+
             </div>
-            {errorEmail&&<p className='errorEmail'><span style={{fontSize:"20px"}}>!</span>  {errorEmail}</p>}
-            <div className="input-group">
-              <FaUser className="input-icon" />
-              <input
-                type="text"
-                placeholder="Username"
-                value={newuser}
-                onChange={(e) => setnewuser(e.target.value)}
-                required
-              />
-            </div>
-            {errorname&&<p className='errorEmail'><span style={{fontSize:"20px"}}>!</span>  {errorname}</p>}
-            <div className="input-group">
-              <FaLock className="input-icon" />
-              <input
-                type="text"
-                placeholder="Password"
-                value={newpassword}
-                onChange={(e) => setnewpassword(e.target.value)}
-                required
-              />
-            </div>
-            {errorpass&&<p className='errorEmail'><span style={{fontSize:"20px"}}>!</span>  {errorpass}</p>}
-            <div className="input-group">
-              <FaLock className="input-icon" />
-              <input
-                type=" text"
-                placeholder="Confirm Password"
-                value={Conpassword}
-                onChange={(e) => setConPassword(e.target.value)}
-                required
-              />
-            </div>
-            <button type="submit" className="login-button" >
-             Sign UP
-            </button> 
-            <p className="signup-text">
-            Already signed up?{' '}
-                <a href="/" onClick={log}>
-                  Login 
-                </a>
-              </p>       
-          </form>
         </div>
-        <div className="welcome-section">
-          <h1>Welcome !</h1>
-          <img
-            src="https://img.freepik.com/free-vector/mobile-login-concept-illustration_114360-83.jpg"
-            alt="Welcome"
-          />
-          <p>Sign up today and make your voice heard!</p>
-        </div>
-      </div></>)
-}
-      
-    </div>
-    </div>
-    </div>
-  );
+    );
 }
