@@ -21,6 +21,8 @@ import {
     FiInbox
 } from "react-icons/fi"; // ✅ Better looking icons
 import ScrollToTop from "../HomeComponent/Scroll-top";
+const API = import.meta.env.VITE_API_URL;
+
 
 Chart.register(
     Tooltip,
@@ -48,7 +50,7 @@ export default function MySurvey() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        axios.get("http://localhost:3001/api/survey/mysurvey", {
+        axios.get(`${API}/api/survey/mysurvey`, {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then((res) => {
@@ -75,7 +77,7 @@ export default function MySurvey() {
             if (!ok) return;
 
             try {
-                await axios.delete(`http://localhost:3001/api/survey/delete/${id}`, {
+                await axios.delete(`${API}/api/survey/delete/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 

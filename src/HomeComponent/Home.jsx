@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+const API = import.meta.env.VITE_API_URL;
 
 // Symmetrical, minimalist icons
 const BuilderIcon = () => (

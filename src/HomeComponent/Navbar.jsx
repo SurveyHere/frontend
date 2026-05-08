@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+const API = import.meta.env.VITE_API_URL;
 // import './Navbar.css'; // No longer needed with Tailwind
 
 const MenuIcon = () => (

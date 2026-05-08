@@ -15,11 +15,12 @@ export default function Surveys() {
     const [Opt, setOpt] = useState([]);
     const [visibleQuestions, setVisibleQuestions] = useState(1);
     const [nosurvey, setnosurvey] = useState(false);
+    const API = import.meta.env.VITE_API_URL;
 
     const questionRefs = useRef([]);
 
     useEffect(() => {
-        axios.get("http://localhost:3001/api/survey/all")
+        axios.get(`${API}/api/survey/all`)
             .then((res) => {
                 const cleaned = (res.data || []).map(s => Array.isArray(s) ? s[0] : s);
                 setQuestions(cleaned);
@@ -55,7 +56,7 @@ export default function Surveys() {
         }
 
         try {
-            await axios.post(`http://localhost:3001/api/survey/answer/${quest._id}`, { answers: Opt });
+            await axios.post(`${API}/api/survey/answer/${quest._id}`, { answers: Opt });
             alert("Survey submitted! Thank you.");
             setSurvey(true);
             setQuest(null);

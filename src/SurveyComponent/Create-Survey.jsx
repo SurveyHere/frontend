@@ -3,6 +3,8 @@ import axios from "axios";
 import swal from "sweetalert";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Trash2, Send, Layout, MessageSquare, PlusCircle, Eye, Settings, List } from "lucide-react";
+const API = import.meta.env.VITE_API_URL;
+
 
 export default function CreateSurvey() {
     const [surveyTopic, setSurveyTopic] = useState("");
@@ -84,7 +86,7 @@ export default function CreateSurvey() {
 
         const token = localStorage.getItem("token");
         axios.post(
-            "http://localhost:3001/api/survey/create",
+            `${API}/api/survey/create`,
             { surveyTopic, questions },
             { headers: { Authorization: `Bearer ${token}` } }
         )

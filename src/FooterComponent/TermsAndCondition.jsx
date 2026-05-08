@@ -2,6 +2,7 @@ import React from 'react'
 import './TermsAndCondition.css'
 // import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
+const API = import.meta.env.VITE_API_URL;
 
 
 export default function TermsAndCondition() {

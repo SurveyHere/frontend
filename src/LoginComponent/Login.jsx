@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import swal from "sweetalert";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+const API = import.meta.env.VITE_API_URL;
 
 export default function Login() {
     const [username, setUsername] = useState("");
@@ -27,7 +28,7 @@ export default function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://localhost:3001/api/auth/login", {
+            const res = await axios.post(`${API}api/auth/login`, {
                 username,
                 password,
             });
@@ -67,7 +68,7 @@ export default function Login() {
         }
 
         try {
-            await axios.post("http://localhost:3001/api/auth/signup", {
+            await axios.post(`${API}/api/auth/signup`, {
                 email: newEmail,
                 username: newuser,
                 password: newpassword,
