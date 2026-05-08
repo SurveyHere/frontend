@@ -12,7 +12,6 @@ import Navbar from './HomeComponent/Navbar';
 import Footer from './FooterComponent/Footer';
 import ContactUs from './FooterComponent/ContactUs';
 import TermsAndCondition from './FooterComponent/TermsAndCondition';
-import Admin from './AdminComponent/Admin'
 
 function App() {
   return (
@@ -37,7 +36,6 @@ function AppContent() {
         <Route path='/AboutUs' element={<AboutUs />} />
         <Route path='/ContactUs' element={<ContactUs />} />
         <Route path='/TermsAndCondition' element={<TermsAndCondition />} />
-        <Route path='/Admin' element={<Admin/>}/>
       </Routes>
       {!hideNavbar && (<><Footer /></>)}
     </div>
